@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+}
+@model MVC_Practice.Models.NameModel
+
+<div class="text-center">
+    <form asp-action="Greeting" asp-controller="Home" method="post">
+        <div>
+			<label asp-for="Name">Enter Your Name:</label>
+			<input asp-for="Name"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <button type="submit" style="margin-top: 20px;">Submit</button>
+    </form>
+</div>
