@@ -55,9 +55,9 @@ namespace MVC_Practice.Repositories.Implementations
                 
                 SqlCommand command = new SqlCommand(@"INSERT INTO Tasks (Title, DueDate, CategoryId) VALUES (@Title, @DueDate, @CategoryId)", connection);
                 command.Parameters.AddWithValue("@Title", task.Title);
-                command.Parameters.AddWithValue("@DueDate", task.DueDate.HasValue ? (object)task.DueDate.Value : DBNull.Value);
+                command.Parameters.AddWithValue("@DueDate", task.DueDate);
                 command.Parameters.AddWithValue("@CategoryId", task.CategoryId);
-                
+
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -131,6 +131,5 @@ namespace MVC_Practice.Repositories.Implementations
                 await command.ExecuteNonQueryAsync();
             }
         }
-
     }
 }

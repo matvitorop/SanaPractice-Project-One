@@ -7,8 +7,8 @@
         public DateTime? DueDate { get; set; }
         public bool IsCompleted { get; set; } = false;
         public DateTime? CompletedDate { get; set; }
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; } = string.Empty;
+        public int? CategoryId { get; set; }
+        public string? CategoryName { get; set; } = string.Empty;
 
     }
 }

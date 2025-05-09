@@ -1,16 +1,81 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model MVC_Practice.Models.Todo_Models.TodoListViewModel
+
+@{
+    ViewData["Title"] = "Todo List";
 
 }
-@model MVC_Practice.Models.NameModel
 
-<div class="text-center">
-    <form asp-action="Greeting" asp-controller="Home" method="post">
-        <div>
-			<label asp-for="Name">Enter Your Name:</label>
-			<input asp-for="Name"/>
-            <span asp-validation-for="Name" class="text-danger"></span>
+<h2 class="text-center mt-4">📝 ToDo List</h2>
+
+<div class="container mt-4" style="max-width: 600px;">
+    <form asp-action="AddTask" method="post" class="mb-4">
+        <div class="form-group">
+            <input asp-for="NewTask.Title" class="form-control form-control-lg" placeholder="Що треба зробити?" required/>
+            <span asp-validation-for="NewTask.Title" class="text-danger"></span>
         </div>
-        <button type="submit" style="margin-top: 20px;">Submit</button>
+        <div class="form-group mt-2">
+            <input asp-for="NewTask.DueDate"
+                   class="form-control"
+                   type="datetime-local"
+                   min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                   required />
+        </div>
+        <div class="form-group mt-2">
+            <select asp-for="NewTask.CategoryId" class="form-control" required>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </div>
+        <div class="mt-3 text-end">
+            <button type="submit" class="btn btn-primary">➕ Додати</button>
+        </div>
     </form>
+
+    <h4 class="mb-3">🟢 Активні завдання</h4>
+    <ul class="list-group mb-4">
+        @foreach (var task in Model.ActiveTasks)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@task.Title</strong>
+                    @if (task.DueDate.HasValue)
+                    {
+                        <small class="text-muted ms-2">до @task.DueDate.Value</small>
+                    }
+                    @if (task.CategoryId.HasValue)
+                    {
+                        var category = Model.Categories.FirstOrDefault(c => c.Id == task.CategoryId);
+                        if (category != null)
+                        {
+                            <span class="badge bg-info text-dark ms-2">@category.Name</span>
+                        }
+                    }
+                </div>
+                <form asp-action="CompleteTask" method="post" class="m-0">
+                    <input type="hidden" name="id" value="@task.Id" />
+                    <button type="submit" class="btn btn-success btn-sm">✔️</button>
+                </form>
+            </li>
+        }
+    </ul>
+
+    <h4 class="mb-3">✅ Завершені</h4>
+    <ul class="list-group">
+        @foreach (var task in Model.CompletedTasks)
+        {
+            <li class="list-group-item text-muted" style="text-decoration: line-through;">
+                <strong>@task.Title</strong>
+                @if (task.CompletedDate.HasValue)
+                {
+                    <small class="ms-2">(виконано @task.CompletedDate.Value.ToShortDateString())</small>
+                }
+            </li>
+        }
+    </ul>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
