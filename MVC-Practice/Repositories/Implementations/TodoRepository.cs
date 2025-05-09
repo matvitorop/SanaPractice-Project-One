@@ -1,0 +1,136 @@
+﻿using Microsoft.Data.SqlClient;
+using MVC_Practice.Models;
+using MVC_Practice.Repositories.Interfaces;
+using System.Threading.Tasks;
+
+namespace MVC_Practice.Repositories.Implementations
+{
+    public class TodoRepository : ITodoRepository
+    {
+        private readonly string _connectionString;
+        public TodoRepository(IConfiguration config)
+        {
+            _connectionString = config.GetConnectionString("DefaultConnection");
+        }
+        public async Task AddCategoryAsync(Categories category)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                SqlCommand command = new SqlCommand("INSERT INTO Categories (Name) VALUES (@Name)", connection);
+                command.Parameters.AddWithValue("@Name", category.Name);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+        public async Task<List<Categories>> GetCategoriesAsync()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                
+                SqlCommand command = new SqlCommand("SELECT * FROM Categories", connection);
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                List<Categories> categories = new List<Categories>();
+                
+                while (reader.Read())
+                {
+                    Categories category = new Categories
+                    {
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+                    categories.Add(category);
+                }
+                
+                return await Task.FromResult(categories);
+            }
+        }
+        public async Task AddTaskAsync(Tasks task)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                SqlCommand command = new SqlCommand(@"INSERT INTO Tasks (Title, DueDate, CategoryId) VALUES (@Title, @DueDate, @CategoryId)", connection);
+                command.Parameters.AddWithValue("@Title", task.Title);
+                command.Parameters.AddWithValue("@DueDate", task.DueDate.HasValue ? (object)task.DueDate.Value : DBNull.Value);
+                command.Parameters.AddWithValue("@CategoryId", task.CategoryId);
+                
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+        public async Task<List<Tasks>> GetActiveTasksAsync()
+        {
+            var list = new List<Tasks>();
+            
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                SqlCommand command = new SqlCommand(@"SELECT t.*, c.Name AS CategoryName"
+                                                    + " FROM Tasks t"
+                                                    + " LEFT JOIN Categories c ON t.CategoryId = c.Id"
+                                                    + " WHERE t.IsCompleted = 0" 
+                                                    + " ORDER BY t.Id", connection);
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync()) 
+                {
+                    list.Add(new Tasks
+                    {
+                        Id = (int)reader["id"],
+                        Title = (string)reader["Title"],
+                        DueDate = reader["DueDate"] as DateTime?,
+                        IsCompleted = (bool)reader["IsCompleted"],
+                        CompletedDate = reader["CompletedDate"] as DateTime?,
+                        CategoryId = (int)reader["CategoryId"],
+                        CategoryName = (string)reader["CategoryName"]
+                    });
+                }
+            }
+            return list;
+        }
+        public async Task<List<Tasks>> GetCompletedTasksAsync()
+        {
+            var list = new List<Tasks>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                SqlCommand command = new SqlCommand(@"SELECT t.*, c.Name AS CategoryName"
+                                                    + " FROM Tasks t"
+                                                    + " LEFT JOIN Categories c ON t.CategoryId = c.Id"
+                                                    + " WHERE t.IsCompleted = 1"
+                                                    + " ORDER BY t.CompletedDate DESC", connection);
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    list.Add(new Tasks
+                    {
+                        Id = (int)reader["id"],
+                        Title = (string)reader["Title"],
+                        DueDate = reader["DueDate"] as DateTime?,
+                        IsCompleted = (bool)reader["IsCompleted"],
+                        CompletedDate = reader["CompletedDate"] as DateTime?,
+                        CategoryId = (int)reader["CategoryId"],
+                        CategoryName = (string)reader["CategoryName"]
+                    });
+                }
+            }
+            return list;
+        }
+        public async Task CompleteTask(int taskId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                SqlCommand command = new SqlCommand(@"UPDATE Tasks SET IsCompleted = 1, CompletedDate = GETDATE() WHERE Id = @id", connection);
+                command.Parameters.AddWithValue("@id", taskId);
+                
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+    }
+}
