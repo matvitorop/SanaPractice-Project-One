@@ -24,7 +24,7 @@ namespace MVC_Practice.Controllers
         public IActionResult Greeting(NameModel model)
         {
             var name = string.IsNullOrWhiteSpace(model.Name) ? "Unknown" : model.Name;
-            ViewData["Username"] = model.Name;
+            ViewData["Username"] = name;
             return View();
         }
 
