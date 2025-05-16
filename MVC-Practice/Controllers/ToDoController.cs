@@ -37,16 +37,26 @@ namespace MVC_Practice.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTask(TodoListViewModel model)
+        public async Task<IActionResult> AddTask(Models.Tasks model)
         {
-            var task = model.NewTask;
 
-            if (string.IsNullOrWhiteSpace(task.Title))
+            if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("NewTask.Title", "Назва обов’язкова.");
             }
 
-            await _todoRepository.AddTaskAsync(task);
+            try
+            {
+                await _todoRepository.AddTaskAsync(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error when adding a task.");
+                ModelState.AddModelError(string.Empty, "Error adding a task.An error occurred while saving. Please try again later.");
+
+                return RedirectToAction("Index");
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -54,7 +64,16 @@ namespace MVC_Practice.Controllers
         [HttpPost]
         public async Task<ActionResult> CompleteTask(int id)
         {
-            await _todoRepository.CompleteTask(id);
+            try
+            {
+                await _todoRepository.CompleteTask(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error when completing a task.");
+                TempData["ErrorMessage"] = "The task could not be completed. Please try again later.";
+            }
+
             return RedirectToAction("Index");
         }
 

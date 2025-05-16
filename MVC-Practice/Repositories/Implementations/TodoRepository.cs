@@ -103,18 +103,18 @@ namespace MVC_Practice.Repositories.Implementations
                         Title = reader.GetString(reader.GetOrdinal("Title")),
                         
                         DueDate = reader.IsDBNull(reader.GetOrdinal("DueDate"))
-                        ? (DateTime?)null
-                        : (DateTime?)reader["DueDate"],
+                        ? null
+                        : (DateTime)reader["DueDate"],
                         
                         IsCompleted = reader.GetBoolean(reader.GetOrdinal("IsCompleted")),
                         
                         CompletedDate = reader.IsDBNull(reader.GetOrdinal("CompletedDate"))
-                        ? (DateTime?)null
-                        : reader.GetDateTime(reader.GetOrdinal("CompletedDate")),
+                        ? null
+                        : (DateTime)reader["CompletedDate"],
                         
                         CategoryId = reader.IsDBNull(reader.GetOrdinal("CategoryId"))
-                        ? (int?)null
-                        : reader.GetInt32(reader.GetOrdinal("CategoryId"))
+                        ? null
+                        : (int)reader["CategoryId"]
                     });
                 }
             }
@@ -138,22 +138,21 @@ namespace MVC_Practice.Repositories.Implementations
                     list.Add(new Tasks
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                        
                         Title = reader.GetString(reader.GetOrdinal("Title")),
-                        
+
                         DueDate = reader.IsDBNull(reader.GetOrdinal("DueDate"))
-                        ? (DateTime?)null
-                        : reader.GetDateTime(reader.GetOrdinal("DueDate")),
-                        
+                        ? null
+                        : (DateTime)reader["DueDate"],
+
                         IsCompleted = reader.GetBoolean(reader.GetOrdinal("IsCompleted")),
-                        
+
                         CompletedDate = reader.IsDBNull(reader.GetOrdinal("CompletedDate"))
-                        ? (DateTime?)null
-                        : reader.GetDateTime(reader.GetOrdinal("CompletedDate")),
-                        
+                        ? null
+                        : (DateTime)reader["CompletedDate"],
+
                         CategoryId = reader.IsDBNull(reader.GetOrdinal("CategoryId"))
-                        ? (int?)null
-                        : reader.GetInt32(reader.GetOrdinal("CategoryId"))
+                        ? null
+                        : (int)reader["CategoryId"]
                     });
                 }
             }
