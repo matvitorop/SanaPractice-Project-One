@@ -8,12 +8,12 @@ using MVC_Practice.Repositories.Interfaces;
 
 namespace MVC_Practice.Controllers
 {
-    public class HomeController : Controller
+    public class ToDoController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<ToDoController> _logger;
         private readonly ITodoRepository _todoRepository;
 
-        public HomeController(ILogger<HomeController> logger, ITodoRepository todoRepository)
+        public ToDoController(ILogger<ToDoController> logger, ITodoRepository todoRepository)
         {
             _logger = logger;
             _todoRepository = todoRepository;
@@ -56,23 +56,6 @@ namespace MVC_Practice.Controllers
         {
             await _todoRepository.CompleteTask(id);
             return RedirectToAction("Index");
-        }
-
-
-
-        // DELETE
-        [HttpPost]
-        public IActionResult Greeting(NameModel model)
-        {
-            var name = string.IsNullOrWhiteSpace(model.Name) ? "Unknown" : model.Name;
-            ViewData["Username"] = name;
-            return View();
-        }
-
-        // REVIEW
-        public IActionResult Privacy()
-        {
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
