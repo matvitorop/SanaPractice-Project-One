@@ -41,10 +41,10 @@ namespace MVC_Practice.Controllers
         {
             var task = model.NewTask;
 
-            //if (string.IsNullOrWhiteSpace(task.Title))
-            //{
-            //    ModelState.AddModelError("NewTask.Title", "Назва обов’язкова.");
-            //}
+            if (string.IsNullOrWhiteSpace(task.Title))
+            {
+                ModelState.AddModelError("NewTask.Title", "Назва обов’язкова.");
+            }
 
             await _todoRepository.AddTaskAsync(task);
             return RedirectToAction("Index");

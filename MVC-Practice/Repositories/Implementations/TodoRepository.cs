@@ -38,8 +38,8 @@ namespace MVC_Practice.Repositories.Implementations
                 {
                     Categories category = new Categories
                     {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1)
+                        Id = (int)reader["Id"],
+                        Name = (string)reader["Name"]
                     };
                     categories.Add(category);
                 }
@@ -109,9 +109,9 @@ namespace MVC_Practice.Repositories.Implementations
                     {
                         Id = (int)reader["id"],
                         Title = (string)reader["Title"],
-                        DueDate = reader["DueDate"] as DateTime?,
+                        DueDate = (DateTime?)reader["DueDate"] as DateTime?,
                         IsCompleted = (bool)reader["IsCompleted"],
-                        CompletedDate = reader["CompletedDate"] as DateTime?,
+                        CompletedDate = (DateTime?)reader["CompletedDate"],
                         CategoryId = (int)reader["CategoryId"],
                         CategoryName = (string)reader["CategoryName"]
                     });
