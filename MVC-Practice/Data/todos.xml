@@ -1,1 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TodoData>
+  <Categories />
+  <Tasks>
+    <Task>
+      <Id>1</Id>
+      <Title>asdasd</Title>
+      <DueDate>30.05.2025 11:22:00</DueDate>
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>29.05.2025 21:14:58</CompletedDate>
+      <CategoryId />
+    </Task>
+    <Task>
+      <Id>2</Id>
+      <Title>Привіт</Title>
+      <DueDate />
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>29.05.2025 21:14:59</CompletedDate>
+      <CategoryId />
+    </Task>
+    <Task>
+      <Id>3</Id>
+      <Title>Як справи?</Title>
+      <DueDate>06.06.2025 11:22:00</DueDate>
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>29.05.2025 21:14:56</CompletedDate>
+      <CategoryId />
+    </Task>
+  </Tasks>
+</TodoData>
