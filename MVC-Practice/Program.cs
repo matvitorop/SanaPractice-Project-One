@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddScoped<TodoRepository>();
+builder.Services.AddScoped<TodoXMLRepository>();
+builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
 var app = builder.Build();
 
