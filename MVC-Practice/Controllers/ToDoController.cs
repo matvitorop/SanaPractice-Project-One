@@ -11,19 +11,27 @@ namespace MVC_Practice.Controllers
     public class ToDoController : Controller
     {
         private readonly ILogger<ToDoController> _logger;
-        private readonly ITodoRepository _todoRepository;
+        private readonly IRepositoryFactory _factory;
 
-        public ToDoController(ILogger<ToDoController> logger, ITodoRepository todoRepository)
+        public ToDoController(ILogger<ToDoController> logger, IRepositoryFactory factory)
         {
             _logger = logger;
-            _todoRepository = todoRepository;
+            _factory = factory;
         }
-
+        private ITodoRepository GetRepo()
+        {
+            return _factory.CreateTodoRepository(Request.Cookies["StorageType"] ?? "db");
+        }
         public async Task<IActionResult> Index()
         {
-            var categories = await _todoRepository.GetCategoriesAsync();
-            var activeTasks = await _todoRepository.GetActiveTasksAsync();
-            var completedTasks = await _todoRepository.GetCompletedTasksAsync();
+            string storageType = Request.Cookies["StorageType"] ?? "db";
+            ViewBag.StorageType = storageType.ToLower();
+
+            var repo = GetRepo();
+
+            var categories = await repo.GetCategoriesAsync();
+            var activeTasks = await repo.GetActiveTasksAsync();
+            var completedTasks = await repo.GetCompletedTasksAsync();
 
             var viewModel = new TodoListViewModel
             {
@@ -45,9 +53,10 @@ namespace MVC_Practice.Controllers
                 ModelState.AddModelError("NewTask.Title", "Назва обов’язкова.");
             }
 
+            var repo = GetRepo();
             try
             {
-                await _todoRepository.AddTaskAsync(model);
+                await repo.AddTaskAsync(model);
             }
             catch (Exception ex)
             {
@@ -64,9 +73,11 @@ namespace MVC_Practice.Controllers
         [HttpPost]
         public async Task<ActionResult> CompleteTask(int id)
         {
+            var repo = GetRepo();
+
             try
             {
-                await _todoRepository.CompleteTask(id);
+                await repo.CompleteTask(id);
             }
             catch (Exception ex)
             {
@@ -75,6 +86,27 @@ namespace MVC_Practice.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SetStorage(string storageType)
+        {
+            if(string.IsNullOrWhiteSpace(storageType) || 
+                !(storageType.Equals("db", StringComparison.OrdinalIgnoreCase) ||
+                storageType.Equals("xml", StringComparison.OrdinalIgnoreCase)))
+            {
+                TempData["ErrorMessage"] = "Invalid storage type selected.";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                Response.Cookies.Append("StorageType", storageType, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    //IsEssential = true,
+                });
+                return RedirectToAction("Index");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

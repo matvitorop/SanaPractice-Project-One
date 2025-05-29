@@ -24,6 +24,12 @@
                         </li>
                     </ul>
                 </div>
+                <form method="post" asp-controller="ToDo" asp-action="SetStorage" class="d-flex align-items-center">
+                    <select name="storageType" class="form-select" onchange="this.form.submit()">
+                        <option value="db" selected="@(ViewBag.StorageType == "db" ? "selected" : null)">DB</option>
+                        <option value="xml" selected="@(ViewBag.StorageType == "xml" ? "selected" : null)">XML</option>
+                    </select>
+                </form>
             </div>
         </nav>
     </header>
