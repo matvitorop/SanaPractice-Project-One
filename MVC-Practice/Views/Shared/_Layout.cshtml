@@ -24,6 +24,12 @@
                         </li>
                     </ul>
                 </div>
+                <form method="post" asp-controller="ToDo" asp-action="SetStorage" class="d-flex align-items-center">
+                    <select>
+                        <option value="db" selected>DB</option>
+                        <option value="xml">XML</option>
+                    </select>
+                </form>
             </div>
         </nav>
     </header>
