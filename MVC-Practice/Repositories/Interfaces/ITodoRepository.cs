@@ -10,5 +10,6 @@ namespace MVC_Practice.Repositories.Interfaces
         Task<List<Tasks>> GetActiveTasksAsync();
         Task<List<Tasks>> GetCompletedTasksAsync();
         Task CompleteTask(int taskId);
+
     }
 }
