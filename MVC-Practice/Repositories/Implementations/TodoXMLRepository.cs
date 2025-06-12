@@ -13,7 +13,7 @@ namespace MVC_Practice.Repositories.Implementations
         public TodoXMLRepository(IConfiguration config)
         {
             var relativePath = config["XmlSettings:FilePath"];
-            _xmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+            _xmlFilePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), relativePath);
             LoadOrCreateXml();
         }
 

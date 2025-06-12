@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TodoData>
+  <Categories />
+  <Tasks>
+    <Task>
+      <Id>1</Id>
+      <Title>Hey</Title>
+      <DueDate />
+      <IsCompleted>false</IsCompleted>
+      <CompletedDate />
+      <CategoryId />
+    </Task>
+    <Task>
+      <Id>2</Id>
+      <Title>Wasup</Title>
+      <DueDate>27.06.2025 11:22:00</DueDate>
+      <IsCompleted>false</IsCompleted>
+      <CompletedDate />
+      <CategoryId />
+    </Task>
+  </Tasks>
+</TodoData>
