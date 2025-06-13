@@ -14,12 +14,14 @@ builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 // Get to know
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<Query>();
-//builder.Services.AddScoped<Mutation>();
+builder.Services.AddScoped<Mutation>();
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>();
-    //.AddMutationType<Mutation>();
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddType<TaskType>()
+    .AddType<CategoryType>();
 
 
 var app = builder.Build();
@@ -29,7 +31,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/ToDo/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

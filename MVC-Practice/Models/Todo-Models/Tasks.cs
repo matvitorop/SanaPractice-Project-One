@@ -4,7 +4,7 @@ namespace MVC_Practice.Models
 {
     public class Tasks
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required(ErrorMessage = "Title is required")]
         [StringLength(4000, ErrorMessage = "Too long title")]
