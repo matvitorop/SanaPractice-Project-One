@@ -1,7 +1,7 @@
 ﻿using MVC_Practice.Models;
 using MVC_Practice.Repositories.Interfaces;
 
-namespace MVC_Practice.Schema
+namespace MVC_Practice.Schemas
 {
     public class Mutation
     {

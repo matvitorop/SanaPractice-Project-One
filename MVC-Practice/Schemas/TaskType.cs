@@ -1,7 +1,7 @@
 ﻿using MVC_Practice.Models;
 using GraphQL.Types;
 
-namespace MVC_Practice.Schema
+namespace MVC_Practice.Schemas
 {
     public class TaskType : ObjectGraphType<Tasks>
     {
