@@ -11,7 +11,6 @@ builder.Services.AddScoped<TodoRepository>();
 builder.Services.AddScoped<TodoXMLRepository>();
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
-// Get to know
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<Query>();
 builder.Services.AddScoped<Mutation>();

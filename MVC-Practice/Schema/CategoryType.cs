@@ -1,17 +1,16 @@
-﻿namespace MVC_Practice.Schema
-{
-    public class CategoryType : ObjectType<Models.Categories>
-    {
-        protected override void Configure(IObjectTypeDescriptor<Models.Categories> descriptor)
-        {
-            descriptor.Description("Represents a category in the to-do list.");
+﻿using GraphQL.Types;
 
-            descriptor.Field(c => c.Id)
+namespace MVC_Practice.Schema
+{
+    public class CategoryType : ObjectGraphType<Models.Categories>
+    {
+        public CategoryType()
+        {
+            Field(x => x.Id)
                 .Description("The unique identifier of the category.");
-            
-            descriptor.Field(c => c.Name)
-                .Description("The name of the category.")
-                .Type<NonNullType<StringType>>();
+
+            Field(x => x.Name)
+                .Description("The name of the category.");
         }
     }
 }

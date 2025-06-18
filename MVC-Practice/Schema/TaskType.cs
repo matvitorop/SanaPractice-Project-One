@@ -1,39 +1,31 @@
 ﻿using MVC_Practice.Models;
+using GraphQL.Types;
 
 namespace MVC_Practice.Schema
 {
-    public class TaskType : ObjectType<Tasks>
+    public class TaskType : ObjectGraphType<Tasks>
     {
-        protected override void Configure(IObjectTypeDescriptor<Tasks> descriptor)
+        public TaskType() 
         {
-            descriptor.Description("Represents a task in the to-do list.");
+            Field(x => x.Id)
+                .Description("The unique identifier of the task.");
             
-            descriptor.Field(t => t.Id).
-                Description("The unique identifier of the task.");
-            
-            descriptor.Field(t => t.Title)
-                .Description("The title of the task.")
-                .Type<NonNullType<StringType>>();
+            Field(x => x.Title)
+                .Description("The title of the task.");
 
-            descriptor.Field(t => t.DueDate)
-                .Description("The due date of the task.")
-                .Type<DateTimeType>();
+            Field(x => x.IsCompleted)
+                .Description("Mark of task status");
+
+            Field(x => x.DueDate, nullable: true)
+                .Description("Time for completing task");
             
-            descriptor.Field(t => t.IsCompleted)
-                .Description("Indicates whether the task is completed.")
-                .Type<NonNullType<BooleanType>>();
+            Field(x => x.CompletedDate, nullable: true)
+                .Description("Date when task was completed");
             
-            descriptor.Field(t => t.CompletedDate)
-                .Description("The date when the task was completed.")
-                .Type<DateTimeType>();
+            Field(x => x.CategoryId, nullable: true)
+                .Description("Id of task category");
             
-            descriptor.Field(t => t.CategoryId)
-                .Description("The ID of the category to which the task belongs.")
-                .Type<IntType>();
-            
-            descriptor.Field(t => t.CategoryName)
-                .Description("The name of the category to which the task belongs.")
-                .Type<StringType>();
+            Field(x => x.CategoryName, nullable: true);
         }
     }
 }

@@ -12,10 +12,10 @@ namespace MVC_Practice.Schema
             _repo = _factory.CreateTodoRepository(storageType);
         }
 
-        public async Task<Tasks> AddTask(Tasks task)
+        public async Task<bool> AddTask(Tasks task)
         {
             await _repo.AddTaskAsync(task);
-            return task;
+            return true;
         }
 
         public async Task<bool> CompleteTask(int id)
