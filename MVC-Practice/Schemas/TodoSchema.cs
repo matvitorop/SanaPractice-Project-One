@@ -9,6 +9,7 @@ namespace MVC_Practice.Schemas
         public TodoSchema(IServiceProvider provider) : base(provider)
         {
             Query = provider.GetRequiredService<TodoQuery>();
+            Mutation = provider.GetRequiredService<TodoMutation>();
         }
     }
 

@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TodoData>
-  <Categories />
+  <Categories>
+    <Category>
+      <Id>1</Id>
+      <Name>Daily</Name>
+    </Category>
+  </Categories>
   <Tasks>
     <Task>
       <Id>1</Id>

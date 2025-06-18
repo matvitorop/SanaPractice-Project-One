@@ -20,6 +20,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TaskType>();
 builder.Services.AddScoped<CategoryType>();
 builder.Services.AddScoped<TodoQuery>();
+builder.Services.AddScoped<TodoMutation>();
+
 builder.Services.AddScoped<ISchema, TodoSchema>();
 
 builder.Services.AddGraphQL(b => b
