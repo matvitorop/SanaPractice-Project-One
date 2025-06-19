@@ -1,152 +1,240 @@
 ﻿using MVC_Practice.Models;
 using MVC_Practice.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace MVC_Practice.Repositories.Implementations
+public class TodoXMLRepository : ITodoRepository
 {
-    public class TodoXMLRepository : ITodoRepository
+    private readonly string _xmlFilePath;
+    private XDocument _xmlDocument;
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    public TodoXMLRepository(IConfiguration config)
     {
-        private readonly string _xmlFilePath;
-        private XDocument _xmlDocument;
+        var relativePath = config["XmlSettings:FilePath"];
+        _xmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+        LoadOrCreateXml().Wait();
+    }
 
-        public TodoXMLRepository(IConfiguration config)
+    private async Task LoadOrCreateXml()
+    {
+        await _semaphore.WaitAsync();
+        try
         {
-            var relativePath = config["XmlSettings:FilePath"];
-            _xmlFilePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), relativePath);
-            LoadOrCreateXml();
-        }
-
-        private void LoadOrCreateXml()
-        {
-            if (File.Exists(_xmlFilePath) && new FileInfo(_xmlFilePath).Length > 0)
+            if (File.Exists(_xmlFilePath))
             {
-                try
+                var fileInfo = new FileInfo(_xmlFilePath);
+                if (fileInfo.Length > 0)
                 {
-                    _xmlDocument = XDocument.Load(_xmlFilePath);
-                }
-                catch (XmlException)
-                {
-                    // Якщо XML пошкоджено — створити новий
-                    CreateNewXmlDocument();
+                    try
+                    {
+                        using (var stream = File.OpenRead(_xmlFilePath))
+                        {
+                            _xmlDocument = await XDocument.LoadAsync(stream, LoadOptions.None, CancellationToken.None);
+                            return;
+                        }
+                    }
+                    catch (XmlException)
+                    {
+                        // Якщо XML пошкоджено — створити новий
+                    }
                 }
             }
-            else
+            await CreateNewXmlDocument();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    private async Task CreateNewXmlDocument()
+    {
+        _xmlDocument = new XDocument(
+            new XElement("TodoData",
+                new XElement("Categories"),
+                new XElement("Tasks")
+            ));
+        await SaveXml();
+    }
+
+    private async Task SaveXml()
+    {
+        //await _semaphore.WaitAsync();
+        try
+        {
+            using (var stream = new FileStream(_xmlFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                CreateNewXmlDocument();
+                await _xmlDocument.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
             }
         }
-
-        private void CreateNewXmlDocument()
+        finally
         {
-            _xmlDocument = new XDocument(
-                new XElement("TodoData",
-                    new XElement("Categories"),
-                    new XElement("Tasks")
-                ));
-            SaveXml();
+            //_semaphore.Release();
         }
+    }
 
-        private void SaveXml()
-        {
-            _xmlDocument.Save(_xmlFilePath);
-        }
-
-        public async Task AddCategoryAsync(Categories category)
+    public async Task AddCategoryAsync(Categories category)
+    {
+        await _semaphore.WaitAsync();
+        try
         {
             var categoriesElement = _xmlDocument.Root.Element("Categories");
+
+            if (categoriesElement.Elements("Category")
+                .Any(x => (string)x.Element("Name") == category.Name))
+            {
+                throw new InvalidOperationException($"Category with name '{category.Name}' already exists");
+            }
+
             categoriesElement.Add(
                 new XElement("Category",
-                    new XElement("Id", GetNextCategoryId()),
+                    new XElement("Id", await GetNextCategoryId()),
                     new XElement("Name", category.Name)
                 ));
-            SaveXml();
-            await Task.CompletedTask;
+            await SaveXml();
         }
-
-        private int GetNextCategoryId()
+        finally
         {
-            var lastId = _xmlDocument.Root.Element("Categories")
+            _semaphore.Release();
+        }
+    }
+
+    private async Task<int> GetNextCategoryId()
+    {
+        var lastId = _xmlDocument.Root.Element("Categories")
+            .Elements("Category")
+            .Select(x => (int)x.Element("Id"))
+            .DefaultIfEmpty(0)
+            .Max();
+        return lastId + 1;
+    }
+
+    public async Task<List<Categories>> GetCategoriesAsync()
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            return _xmlDocument.Root.Element("Categories")
                 .Elements("Category")
-                .Select(x => (int)x.Element("Id"))
-                .DefaultIfEmpty(0)
-                .Max();
-            return lastId + 1;
+                .Select(x => new Categories
+                {
+                    Id = (int)x.Element("Id"),
+                    Name = (string)x.Element("Name")
+                }).ToList();
         }
-
-        public async Task<List<Categories>> GetCategoriesAsync()
+        finally
         {
-            return await Task.FromResult(
-                _xmlDocument.Root.Element("Categories")
-                    .Elements("Category")
-                    .Select(x => new Categories
-                    {
-                        Id = (int)x.Element("Id"),
-                        Name = (string)x.Element("Name")
-                    }).ToList());
+            _semaphore.Release();
         }
+    }
 
-        public async Task AddTaskAsync(Tasks task)
+    public async Task AddTaskAsync(Tasks task)
+    {
+        await _semaphore.WaitAsync();
+        try
         {
             var tasksElement = _xmlDocument.Root.Element("Tasks");
             tasksElement.Add(
                 new XElement("Task",
-                    new XElement("Id", GetNextTaskId()),
+                    new XElement("Id", await GetNextTaskId()),
                     new XElement("Title", task.Title),
-                    new XElement("DueDate", task.DueDate.HasValue ? task.DueDate.ToString() : null),
+                    new XElement("DueDate", task.DueDate?.ToString("o")),
                     new XElement("IsCompleted", task.IsCompleted),
-                    new XElement("CompletedDate", task.CompletedDate.HasValue ? task.CompletedDate.ToString() : null),
-                    new XElement("CategoryId", task.CategoryId.HasValue ? task.CategoryId.ToString() : null)
+                    new XElement("CompletedDate", task.CompletedDate?.ToString("o")),
+                    new XElement("CategoryId", task.CategoryId)
                 ));
-            SaveXml();
-            await Task.CompletedTask;
+            await SaveXml();
         }
-
-        private int GetNextTaskId()
+        finally
         {
-            var lastId = _xmlDocument.Root.Element("Tasks")
-                .Elements("Task")
-                .Select(x => (int)x.Element("Id"))
-                .DefaultIfEmpty(0)
-                .Max();
-            return lastId + 1;
+            _semaphore.Release();
         }
+    }
 
-        public async Task<List<Tasks>> GetActiveTasksAsync()
+    private async Task<int> GetNextTaskId()
+    {
+        var lastId = _xmlDocument.Root.Element("Tasks")
+            .Elements("Task")
+            .Select(x => (int)x.Element("Id"))
+            .DefaultIfEmpty(0)
+            .Max();
+        return lastId + 1;
+    }
+
+    public async Task<List<Tasks>> GetActiveTasksAsync()
+    {
+        var tasks = await GetTasksQueryAsync();
+        return tasks
+            .Where(t => !t.IsCompleted)
+            .OrderBy(t => t.Id)
+            .ToList();
+    }
+
+    public async Task<List<Tasks>> GetCompletedTasksAsync()
+    {
+        var tasks = await GetTasksQueryAsync();
+        return tasks
+            .Where(t => t.IsCompleted)
+            .OrderByDescending(t => t.CompletedDate)
+            .ToList();
+    }
+
+    private async Task<IEnumerable<Tasks>> GetTasksQueryAsync()
+    {
+        var categories = (await GetCategoriesAsync()).ToDictionary(c => c.Id);
+    
+        await _semaphore.WaitAsync();
+        try
         {
-            return await Task.FromResult(GetTasksQuery()
-                .Where(t => !t.IsCompleted)
-                .OrderBy(t => t.Id)
-                .ToList());
-        }
-
-        public async Task<List<Tasks>> GetCompletedTasksAsync()
-        {
-            return await Task.FromResult(GetTasksQuery()
-                .Where(t => t.IsCompleted)
-                .OrderByDescending(t => t.CompletedDate)
-                .ToList());
-        }
-
-        private IEnumerable<Tasks> GetTasksQuery()
-        {
-            var categories = GetCategoriesAsync().Result.ToDictionary(c => c.Id);
-
             return _xmlDocument.Root.Element("Tasks")
                 .Elements("Task")
                 .Select(x => new Tasks
                 {
                     Id = (int)x.Element("Id"),
                     Title = (string)x.Element("Title"),
-                    DueDate = string.IsNullOrEmpty((string)x.Element("DueDate")) ? null : DateTime.Parse((string)x.Element("DueDate")),
+                    DueDate = ParseXmlDateTime(x.Element("DueDate")),
                     IsCompleted = (bool)x.Element("IsCompleted"),
-                    CompletedDate = string.IsNullOrEmpty((string)x.Element("CompletedDate")) ? null : DateTime.Parse((string)x.Element("CompletedDate")),
-                    CategoryId = string.IsNullOrEmpty((string)x.Element("CategoryId")) ? null : (int?)int.Parse((string)x.Element("CategoryId")),
-                    CategoryName = string.IsNullOrEmpty((string)x.Element("CategoryId")) ? null : categories[(int)x.Element("CategoryId")].Name
+                    CompletedDate = ParseXmlDateTime(x.Element("CompletedDate")),
+                    CategoryId = ParseNullableInt(x.Element("CategoryId")),
+                    CategoryName = ParseNullableInt(x.Element("CategoryId")) != null 
+                        && categories.TryGetValue((int)x.Element("CategoryId"), out var category) 
+                        ? category.Name 
+                        : null
                 });
         }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
 
-        public async Task CompleteTask(int taskId)
+    private int? ParseNullableInt(XElement element)
+    {
+        if (element == null || string.IsNullOrEmpty(element.Value))
+            return null;
+    
+        return int.Parse(element.Value);
+    }
+
+    private DateTime? ParseXmlDateTime(XElement element)
+    {
+        if (element == null || string.IsNullOrEmpty(element.Value))
+            return null;
+
+        return DateTime.Parse(element.Value, null, System.Globalization.DateTimeStyles.RoundtripKind);
+    }
+
+    public async Task CompleteTask(int taskId)
+    {
+        await _semaphore.WaitAsync();
+        try
         {
             var taskElement = _xmlDocument.Root.Element("Tasks")
                 .Elements("Task")
@@ -155,10 +243,13 @@ namespace MVC_Practice.Repositories.Implementations
             if (taskElement != null)
             {
                 taskElement.Element("IsCompleted").Value = "true";
-                taskElement.Element("CompletedDate").Value = DateTime.Now.ToString();
-                SaveXml();
+                taskElement.Element("CompletedDate").Value = DateTime.UtcNow.ToString("o");
+                await SaveXml();
             }
-            await Task.CompletedTask;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 }

@@ -23,5 +23,13 @@
       <CompletedDate />
       <CategoryId />
     </Task>
+    <Task>
+      <Id>3</Id>
+      <Title>Test</Title>
+      <DueDate />
+      <IsCompleted>false</IsCompleted>
+      <CompletedDate />
+      <CategoryId />
+    </Task>
   </Tasks>
 </TodoData>
