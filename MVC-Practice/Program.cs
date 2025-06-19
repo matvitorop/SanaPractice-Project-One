@@ -1,33 +1,37 @@
+using GraphQL;
+using GraphQL.MicrosoftDI;
+using GraphQL.Server;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Types;
 using MVC_Practice.Repositories.Implementations;
 using MVC_Practice.Repositories.Interfaces;
-using MVC_Practice.Schema;
+using MVC_Practice.Schemas;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<TodoRepository>();
 builder.Services.AddScoped<TodoXMLRepository>();
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
-// Get to know
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<Query>();
-builder.Services.AddScoped<Mutation>();
+builder.Services.AddHttpContextAccessor();
 
-builder.Services
-    .AddGraphQLServer()
-    .AddQueryType<Query>()
-    .AddMutationType<Mutation>()
-    .AddType<TaskType>()
-    .AddType<CategoryType>();
+builder.Services.AddScoped<TaskType>();
+builder.Services.AddScoped<CategoryType>();
+builder.Services.AddScoped<TodoQuery>();
+builder.Services.AddScoped<TodoMutation>();
 
+builder.Services.AddScoped<ISchema, TodoSchema>();
+
+builder.Services.AddGraphQL(b => b
+    .AddSystemTextJson()
+    .AddGraphTypes()
+    .AddAuthorizationRule()
+);
 
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/ToDo/Error");
@@ -38,13 +42,23 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=ToDo}/{action=Index}/");
+app.UseGraphQL("/graphql");
 
-app.MapGraphQL();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=ToDo}/{action=Index}/");
+});
+
+app.UseGraphQLGraphiQL("/ui/graphiql", new GraphiQLOptions
+{
+    Headers = new Dictionary<string, string>
+    {
+        { "StorageType", "db" }
+    }
+});
 
 app.Run();
