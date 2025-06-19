@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var storageType = Context.Request.Cookies["StorageType"] ?? "db";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,8 +29,8 @@
                 </div>
                 <form method="post" asp-controller="ToDo" asp-action="SetStorage" class="d-flex align-items-center">
                     <select name="storageType" class="form-select" onchange="this.form.submit()">
-                        <option value="db" selected="@(ViewBag.StorageType == "db" ? "selected" : null)">DB</option>
-                        <option value="xml" selected="@(ViewBag.StorageType == "xml" ? "selected" : null)">XML</option>
+                        <option value="db" selected="@(storageType == "db" ? "selected" : null)">DB</option>
+                        <option value="xml" selected="@(storageType == "xml" ? "selected" : null)">XML</option>
                     </select>
                 </form>
             </div>

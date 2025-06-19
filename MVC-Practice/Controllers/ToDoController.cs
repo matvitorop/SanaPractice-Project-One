@@ -24,8 +24,8 @@ namespace MVC_Practice.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            string storageType = Request.Cookies["StorageType"] ?? "db";
-            ViewBag.StorageType = storageType.ToLower();
+            //string storageType = Request.Cookies["StorageType"] ?? "db";
+            //ViewBag.StorageType = storageType.ToLower();
 
             var repo = GetRepo();
 
