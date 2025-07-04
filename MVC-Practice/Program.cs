@@ -9,6 +9,17 @@ using MVC_Practice.Schemas;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:49574")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<TodoRepository>();
@@ -40,6 +51,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseCors("AllowReactApp");
 
 app.UseRouting();
 app.UseAuthorization();

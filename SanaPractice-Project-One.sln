@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVC-Practice", "MVC-Practice\MVC-Practice.csproj", "{004426E6-F5A7-4A27-9F45-68C89A614C66}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react-frontend", "react-frontend\react-frontend.esproj", "{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,17 @@ Global
 		{004426E6-F5A7-4A27-9F45-68C89A614C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{004426E6-F5A7-4A27-9F45-68C89A614C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{004426E6-F5A7-4A27-9F45-68C89A614C66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD6691A-BEDD-7FF7-ECCE-1CFD7E72A831}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F798F34-02EC-4A25-A012-B70845B88A0B}
 	EndGlobalSection
 EndGlobal
