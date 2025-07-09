@@ -1,26 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
-const GET_TASKS_AND_CATEGORIES = gql`
-  query {
-    activeTasks { id title dueDate categoryId }
-    completedTasks { id title completedDate }
-    categories { id name }
-  }
-`;
-
-const ADD_TASK = gql`
-  mutation AddTask($task: TaskInput!) {
-    addTask(task: $task)
-  }
-`;
-
-const COMPLETE_TASK = gql`
-  mutation CompleteTask($id: Int!) {
-    completeTask(id: $id)
-  }
-`;
-
 export default function TodoList() {
     const { loading, error, data, refetch } = useQuery(GET_TASKS_AND_CATEGORIES);
     const [addTask] = useMutation(ADD_TASK);
