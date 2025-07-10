@@ -10,7 +10,7 @@ namespace MVC_Practice.Schemas
     {
         public TodoMutation(IHttpContextAccessor httpContextAccessor, IRepositoryFactory _factory)
         {
-            Field<BooleanGraphType>("addTask")
+            Field<TaskType>("addTask")
                 .Argument<TaskInputType>("task", "The task to add")
                 .ResolveAsync(async context =>
                 {
@@ -21,14 +21,15 @@ namespace MVC_Practice.Schemas
                     
                     try
                     {
-                        await repo.AddTaskAsync(task);
+                        var createdTask = await repo.AddTaskAsync(task);
+                        return createdTask;
 
-                    }catch (Exception ex)
-                    {
-                        return false;
                     }
-
-                    return true;
+                    catch (Exception ex)
+                    {
+                        context.Errors.Add(new ExecutionError("Failed to add task", ex));
+                        return null;
+                    }
                 });
 
             Field<BooleanGraphType>("completeTask")

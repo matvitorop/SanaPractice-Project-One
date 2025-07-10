@@ -31,5 +31,13 @@
       <CompletedDate />
       <CategoryId />
     </Task>
+    <Task>
+      <Id>4</Id>
+      <Title>New React Task test</Title>
+      <DueDate>2025-07-11T11:22:00.0000000Z</DueDate>
+      <IsCompleted>false</IsCompleted>
+      <CompletedDate />
+      <CategoryId>1</CategoryId>
+    </Task>
   </Tasks>
 </TodoData>

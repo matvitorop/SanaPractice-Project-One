@@ -1,21 +1,8 @@
 import './App.css'
-
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+import client from './ApolloClient.jsx';
 import Layout from './components/Layout.jsx';
 import TodoList from './components/TodoList.jsx';
-
-
-const httpLink = createHttpLink({
-    uri: 'https://localhost:7171/graphql',
-    headers: {
-        'StorageType': 'db'
-    }
-});
-
-const client = new ApolloClient({
-    link: httpLink,
-    cache: new InMemoryCache(),
-});
 
 export default function App() {
   return (

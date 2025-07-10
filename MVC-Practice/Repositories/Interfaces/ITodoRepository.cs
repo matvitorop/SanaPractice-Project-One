@@ -6,7 +6,7 @@ namespace MVC_Practice.Repositories.Interfaces
     {
         Task AddCategoryAsync(Categories category);
         Task<List<Categories>> GetCategoriesAsync();
-        Task AddTaskAsync(Tasks task);
+        Task<Tasks> AddTaskAsync(Tasks task);
         Task<List<Tasks>> GetActiveTasksAsync();
         Task<List<Tasks>> GetCompletedTasksAsync();
         Task CompleteTask(int taskId);

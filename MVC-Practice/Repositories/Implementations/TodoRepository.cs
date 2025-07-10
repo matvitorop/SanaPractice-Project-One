@@ -47,13 +47,14 @@ namespace MVC_Practice.Repositories.Implementations
                 return await Task.FromResult(categories);
             }
         }
-        public async Task AddTaskAsync(Tasks task)
+        public async Task<Models.Tasks> AddTaskAsync(Tasks task)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
                 var query = @"INSERT INTO Tasks (Title, DueDate, IsCompleted, CompletedDate, CategoryId)
+                      OUTPUT INSERTED.Id, INSERTED.Title, INSERTED.DueDate, INSERTED.IsCompleted, INSERTED.CompletedDate, INSERTED.CategoryId  
                       VALUES (@Title, @DueDate, @IsCompleted, @CompletedDate, @CategoryId)";
 
                 using (var command = new SqlCommand(query, connection))
@@ -76,9 +77,24 @@ namespace MVC_Practice.Repositories.Implementations
                     else
                         command.Parameters.AddWithValue("@CategoryId", DBNull.Value);
 
-                    await command.ExecuteNonQueryAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Tasks
+                            {
+                                Id = reader.GetInt32(0),
+                                Title = reader.GetString(1),
+                                DueDate = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                                IsCompleted = reader.GetBoolean(3),
+                                CompletedDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
+                                CategoryId = reader.IsDBNull(5) ? null : reader.GetInt32(5)
+                            };
+                        }
+                    }
                 }
             }
+            return null;
         }
         public async Task<List<Tasks>> GetActiveTasksAsync()
         {

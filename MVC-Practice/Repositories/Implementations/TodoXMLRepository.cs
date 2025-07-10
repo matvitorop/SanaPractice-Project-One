@@ -135,22 +135,35 @@ public class TodoXMLRepository : ITodoRepository
         }
     }
 
-    public async Task AddTaskAsync(Tasks task)
+    public async Task<Tasks> AddTaskAsync(Tasks task)
     {
         await _semaphore.WaitAsync();
         try
         {
             var tasksElement = _xmlDocument.Root.Element("Tasks");
-            tasksElement.Add(
-                new XElement("Task",
-                    new XElement("Id", await GetNextTaskId()),
-                    new XElement("Title", task.Title),
-                    new XElement("DueDate", task.DueDate?.ToString("o")),
-                    new XElement("IsCompleted", task.IsCompleted),
-                    new XElement("CompletedDate", task.CompletedDate?.ToString("o")),
-                    new XElement("CategoryId", task.CategoryId)
-                ));
+            var newId = await GetNextTaskId();
+
+            var newTaskElement = new XElement("Task",
+                new XElement("Id", newId),
+                new XElement("Title", task.Title),
+                new XElement("DueDate", task.DueDate?.ToString("o")),
+                new XElement("IsCompleted", task.IsCompleted),
+                new XElement("CompletedDate", task.CompletedDate?.ToString("o")),
+                new XElement("CategoryId", task.CategoryId)
+            );
+
+            tasksElement.Add(newTaskElement);
             await SaveXml();
+
+            return new Tasks
+            {
+                Id = newId,
+                Title = task.Title,
+                DueDate = task.DueDate,
+                IsCompleted = task.IsCompleted,
+                CompletedDate = task.CompletedDate,
+                CategoryId = task.CategoryId
+            };
         }
         finally
         {
