@@ -1,37 +1,36 @@
-import { useState } from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTasks, addTask, completeTask } from '../store/taskActions'
 
 export default function TodoList() {
-    const { loading, error, data, refetch } = useQuery(GET_TASKS_AND_CATEGORIES);
-    const [addTask] = useMutation(ADD_TASK);
-    const [completeTask] = useMutation(COMPLETE_TASK);
+    const dispatch = useDispatch();
+    const { activeTasks, completedTasks, categories, loading, error } = useSelector(state => state.tasks);
 
     const [title, setTitle] = useState('');
     const [duedate, setDueDate] = useState('');
     const [categoryId, setCategoryId] = useState('');
 
+    useEffect(() => {
+        dispatch(fetchTasks());
+    }, [dispatch]);
+    
+
     const handleAddTask = async (e) => {
         e.preventDefault();
 
-        await addTask({
-            variables: {
-                task: {
-                    title,
-                    duedate: duedate ? new Date(duedate).toISOString() : null,
-                    categoryId: categoryId ? parseInt(categoryId) : null
-                }
-            }
-        });
+        await dispatch(addTask({
+            title,
+            duedate: duedate ? new Date(duedate).toISOString() : null,
+            categoryId: categoryId ? parseInt(categoryId) : null
+        }));
 
         setTitle('');
         setDueDate('');
         setCategoryId('');
-        refetch();
     };
 
     const handleCompleteTask = async (id) => {
-        await completeTask({ variables: { id } });
-        refetch();
+        await dispatch(completeTask(id));
     };
 
     if (loading) return <p>Loading...</p>;
@@ -63,7 +62,7 @@ export default function TodoList() {
                     onChange={(e) => setCategoryId(e.target.value)}
                 >
                     <option value="">Without category</option>
-                    {data.categories.map(cat => (
+                    {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                 </select>
@@ -74,14 +73,14 @@ export default function TodoList() {
 
             <h4 className="mb-3">Active tasks</h4>
             <ul className="list-group mb-4">
-                {data.activeTasks.map(task => (
+                {activeTasks.map(task => (
                     <li key={task.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{task.title}</strong>
                             {task.dueDate && <small className="text-muted ms-2">before {task.dueDate}</small>}
                             {task.categoryId && (
                                 <span className="badge bg-info text-dark ms-2">
-                                    {data.categories.find(c => c.id === task.categoryId)?.name}
+                                    {categories.find(c => c.id === task.categoryId)?.name}
                                 </span>
                             )}
                         </div>
@@ -92,7 +91,7 @@ export default function TodoList() {
 
             <h4 className="mb-3">Completed tasks</h4>
             <ul className="list-group">
-                {data.completedTasks.map(task => (
+                {completedTasks.map(task => (
                     <li key={task.id} className="list-group-item text-muted" style={{ textDecoration: 'line-through' }}>
                         <strong>{task.title}</strong>
                         {task.completedDate && <small className="ms-2">(completed {task.completedDate})</small>}

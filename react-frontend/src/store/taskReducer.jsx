@@ -27,19 +27,20 @@ export default function taskReducer(state = initialState, action) {
           return {
               ...state,
               loading: false,
-              error: action.playload.error,
+              error: "Error, try later",
           };
       case 'ADD_TASK':
             return {
                 ...state,
-                activeTasks: [...state.activeTasks, action.payload.task]
+                activeTasks: [...state.activeTasks, action.payload]
             };
       case 'COMPLETE_TASK':
+          { const completedTasks = state.activeTasks.find(task => task.id == action.payload.id);
           return {
               ...state,
               activeTasks: state.activeTasks.filter(task => task.id != action.payload.id),
-              completedTasks: [...state.completedTasks, action.playload]
-          }
+              completedTasks: [...state.completedTasks, completedTasks]
+          } }
       default:
           return state;
   }
