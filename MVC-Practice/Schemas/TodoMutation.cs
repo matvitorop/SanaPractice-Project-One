@@ -32,23 +32,16 @@ namespace MVC_Practice.Schemas
                     }
                 });
 
-            Field<BooleanGraphType>("completeTask")
+            Field<TaskType>("completeTask")
                 .Argument<IntGraphType>("id", "task id")
                 .ResolveAsync(async context =>
                 {
                     var storageType = httpContextAccessor.HttpContext?.Request.Headers["StorageType"].FirstOrDefault() ?? "db";
                     var repo = _factory.CreateTodoRepository(storageType);
                     var id = context.GetArgument<int>("id");
-                    
-                    try
-                    {
-                        await repo.CompleteTask(id);
 
-                    }catch (Exception ex)
-                    {
-                        return false;
-                    }
-                    return true;
+                    var updatedTask = await repo.CompleteTask(id);
+                    return updatedTask;
                 });
 
             Field<BooleanGraphType>("addCategory")

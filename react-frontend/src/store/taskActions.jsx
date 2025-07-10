@@ -22,7 +22,11 @@ const ADD_TASK = gql`
 
 const COMPLETE_TASK = gql`
   mutation CompleteTask($id: Int!) {
-    completeTask(id: $id)
+    completeTask(id: $id){
+        id
+        title
+        completedDate
+    }
   }
 `;
 
@@ -58,13 +62,12 @@ export const addTask = (task) => async (dispatch) => {
 };
 
 export const completeTask = (id) => async (dispatch) => {
-    await client.mutate({
+    const { data } = await client.mutate({
         mutation: COMPLETE_TASK,
         variables: { id }
     });
-
     dispatch({
         type: 'COMPLETE_TASK',
-        payload: { id }
+        payload: data.completeTask
     });
 };

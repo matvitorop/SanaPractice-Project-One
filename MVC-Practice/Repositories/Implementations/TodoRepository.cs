@@ -174,16 +174,40 @@ namespace MVC_Practice.Repositories.Implementations
             }
             return list;
         }
-        public async Task CompleteTask(int taskId)
+        public async Task<Tasks> CompleteTask(int taskId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                SqlCommand command = new SqlCommand(@"UPDATE Tasks SET IsCompleted = 1, CompletedDate = GETDATE() WHERE Id = @id", connection);
-                command.Parameters.AddWithValue("@id", taskId);
-                
-                await command.ExecuteNonQueryAsync();
+                SqlCommand updateCommand = new SqlCommand(
+                    @"UPDATE Tasks SET IsCompleted = 1, CompletedDate = GETDATE() WHERE Id = @id",
+                    connection);
+                updateCommand.Parameters.AddWithValue("@id", taskId);
+                await updateCommand.ExecuteNonQueryAsync();
+
+                SqlCommand selectCommand = new SqlCommand(
+                    @"SELECT Id, Title, DueDate, CategoryId, IsCompleted, CompletedDate 
+              FROM Tasks WHERE Id = @id",
+                    connection);
+                selectCommand.Parameters.AddWithValue("@id", taskId);
+
+                using (var reader = await selectCommand.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new Tasks
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            DueDate = reader.IsDBNull(reader.GetOrdinal("DueDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("DueDate")),
+                            CategoryId = reader.IsDBNull(reader.GetOrdinal("CategoryId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                            IsCompleted = reader.GetBoolean(reader.GetOrdinal("IsCompleted")),
+                            CompletedDate = reader.IsDBNull(reader.GetOrdinal("CompletedDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("CompletedDate"))
+                        };
+                    }
+                }
+                return null;
             }
         }
     }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -244,7 +245,7 @@ public class TodoXMLRepository : ITodoRepository
         return DateTime.Parse(element.Value, null, System.Globalization.DateTimeStyles.RoundtripKind);
     }
 
-    public async Task CompleteTask(int taskId)
+    public async Task<Tasks> CompleteTask(int taskId)
     {
         await _semaphore.WaitAsync();
         try
@@ -256,9 +257,22 @@ public class TodoXMLRepository : ITodoRepository
             if (taskElement != null)
             {
                 taskElement.Element("IsCompleted").Value = "true";
-                taskElement.Element("CompletedDate").Value = DateTime.UtcNow.ToString("o");
+                var completedDate = DateTime.UtcNow;
+                taskElement.Element("CompletedDate").Value = completedDate.ToString("o");
                 await SaveXml();
+
+                return new Tasks
+                {
+                    Id = taskId,
+                    Title = taskElement.Element("Title").Value,
+                    DueDate = DateTime.TryParse(taskElement.Element("DueDate")?.Value, out var due) ? due : (DateTime?)null,
+                    CategoryId = int.TryParse(taskElement.Element("CategoryId")?.Value, out var catId) ? catId : (int?)null,
+                    IsCompleted = true,
+                    CompletedDate = completedDate
+                };
             }
+
+            return null;
         }
         finally
         {

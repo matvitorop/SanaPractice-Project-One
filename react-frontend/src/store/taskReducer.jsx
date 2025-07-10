@@ -35,12 +35,11 @@ export default function taskReducer(state = initialState, action) {
                 activeTasks: [...state.activeTasks, action.payload]
             };
       case 'COMPLETE_TASK':
-          { const completedTasks = state.activeTasks.find(task => task.id == action.payload.id);
           return {
               ...state,
               activeTasks: state.activeTasks.filter(task => task.id != action.payload.id),
-              completedTasks: [...state.completedTasks, completedTasks]
-          } }
+              completedTasks: [action.payload, ...state.completedTasks]
+          };
       default:
           return state;
   }

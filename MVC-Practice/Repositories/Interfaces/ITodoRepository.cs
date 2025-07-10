@@ -9,7 +9,7 @@ namespace MVC_Practice.Repositories.Interfaces
         Task<Tasks> AddTaskAsync(Tasks task);
         Task<List<Tasks>> GetActiveTasksAsync();
         Task<List<Tasks>> GetCompletedTasksAsync();
-        Task CompleteTask(int taskId);
+        Task<Tasks> CompleteTask(int taskId);
 
     }
 }
