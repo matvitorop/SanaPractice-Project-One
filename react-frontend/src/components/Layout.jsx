@@ -1,12 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchTasks } from '../store/taskActions'
+import Cookies from 'js-cookie';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-export default function Layout({ children })
-{
+export default function Layout({ children }) {
     const [storageType, setStorageType] = useState('db');
+    const dispatch = useDispatch();
 
-    const handleStorageTypeChange = (event) => setStorageType(event.target.value);
+    useEffect(() => {
+        const savedType = Cookies.get('StorageType');
+        if (savedType) {
+            setStorageType(savedType);
+        }
+    }, []);
+
+    const handleStorageTypeChange = (event) => {
+        const value = event.target.value;
+        setStorageType(value);
+        Cookies.set('StorageType', value);
+        dispatch(fetchTasks()); // Re-fetch tasks with new storage type
+    };
 
     return (
         <>
@@ -25,7 +39,7 @@ export default function Layout({ children })
             </header>
 
             <main>
-                { children }
+                {children}
             </main>
 
             <footer className="border-top footer text-muted mt-3">

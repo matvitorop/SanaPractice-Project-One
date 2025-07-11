@@ -33,7 +33,7 @@ const COMPLETE_TASK = gql`
 export const fetchTasks = () => async (dispatch) => {
     dispatch({ type: 'FETCH_TASKS_REQUEST' });
     try {
-        const { data } = await client.query({ query: GET_TASKS_AND_CATEGORIES })
+        const { data } = await client.query({ query: GET_TASKS_AND_CATEGORIES, fetchPolicy: 'network-only' })
         dispatch({
             type: 'FETCH_TASKS_SUCCESS',
             payload: {
