@@ -19,7 +19,7 @@ export default function Layout({ children }) {
         const value = event.target.value;
         setStorageType(value);
         Cookies.set('StorageType', value);
-        dispatch(fetchTasks()); // Re-fetch tasks with new storage type
+        dispatch(fetchTasks());
     };
 
     return (

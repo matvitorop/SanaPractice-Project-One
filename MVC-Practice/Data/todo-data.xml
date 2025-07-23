@@ -35,8 +35,8 @@
       <Id>4</Id>
       <Title>New React Task test</Title>
       <DueDate>2025-07-11T11:22:00.0000000Z</DueDate>
-      <IsCompleted>false</IsCompleted>
-      <CompletedDate />
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>2025-07-11T11:26:59.6441236Z</CompletedDate>
       <CategoryId>1</CategoryId>
     </Task>
     <Task>
@@ -46,6 +46,22 @@
       <IsCompleted>true</IsCompleted>
       <CompletedDate>2025-07-10T17:29:36.8058900Z</CompletedDate>
       <CategoryId />
+    </Task>
+    <Task>
+      <Id>6</Id>
+      <Title>New task for XML</Title>
+      <DueDate>2025-07-24T08:22:00.0000000Z</DueDate>
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>2025-07-11T11:27:41.8841252Z</CompletedDate>
+      <CategoryId>1</CategoryId>
+    </Task>
+    <Task>
+      <Id>7</Id>
+      <Title>New task with RXJS</Title>
+      <DueDate>2025-07-31T08:22:00.0000000Z</DueDate>
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>2025-07-23T14:43:22.7238932Z</CompletedDate>
+      <CategoryId>1</CategoryId>
     </Task>
   </Tasks>
 </TodoData>
