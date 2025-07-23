@@ -3,8 +3,9 @@ import { useDispatch } from 'react-redux';
 import { fetchTasks } from '../store/taskActions'
 import Cookies from 'js-cookie';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Outlet } from 'react-router-dom';
 
-export default function Layout({ children }) {
+export default function Layout() {
     const [storageType, setStorageType] = useState('db');
     const dispatch = useDispatch();
 
@@ -39,7 +40,7 @@ export default function Layout({ children }) {
             </header>
 
             <main>
-                {children}
+                <Outlet/>
             </main>
 
             <footer className="border-top footer text-muted mt-3">
