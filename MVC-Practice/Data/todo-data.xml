@@ -63,5 +63,13 @@
       <CompletedDate>2025-07-23T14:43:22.7238932Z</CompletedDate>
       <CategoryId>1</CategoryId>
     </Task>
+    <Task>
+      <Id>8</Id>
+      <Title>Types add successfully</Title>
+      <DueDate>2025-07-31T08:22:00.0000000Z</DueDate>
+      <IsCompleted>true</IsCompleted>
+      <CompletedDate>2025-07-26T20:35:57.9425094Z</CompletedDate>
+      <CategoryId>1</CategoryId>
+    </Task>
   </Tasks>
 </TodoData>

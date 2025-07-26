@@ -1,3 +1,11 @@
+import {
+    FETCH_TASKS_REQUEST,
+    FETCH_TASKS_SUCCESS,
+    ADD_TASK,
+    COMPLETE_TASK,
+    FETCH_TASKS_FAILURE,
+} from './ActionTypes'
+
 const initialState =
 {
     loading: false,
@@ -9,13 +17,13 @@ const initialState =
 
 export default function taskReducer(state = initialState, action) {
   switch (action.type) {
-      case 'FETCH_TASKS_REQUEST':
+      case FETCH_TASKS_REQUEST:
           return {
               ...state,
               loading: true,
               error: null
           }
-      case 'FETCH_TASKS_SUCCESS':
+      case FETCH_TASKS_SUCCESS:
           return {
               ...state,
               loading: false,
@@ -23,18 +31,18 @@ export default function taskReducer(state = initialState, action) {
               completedTasks: action.payload.completedTasks,
               categories: action.payload.categories
           }
-      case 'FETCH_TASKS_FAILURE':
+      case FETCH_TASKS_FAILURE:
           return {
               ...state,
               loading: false,
               error: "Error, try later",
           };
-      case 'ADD_TASK':
+      case ADD_TASK:
             return {
                 ...state,
                 activeTasks: [...state.activeTasks, action.payload]
             };
-      case 'COMPLETE_TASK':
+      case COMPLETE_TASK:
           return {
               ...state,
               activeTasks: state.activeTasks.filter(task => task.id != action.payload.id),

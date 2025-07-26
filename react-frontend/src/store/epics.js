@@ -3,6 +3,14 @@ import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import Cookies from 'js-cookie';
 
+import {
+    FETCH_TASKS_REQUEST,
+    ADD_TASK_REQUEST,
+    COMPLETE_TASK_REQUEST
+} from './ActionTypes'
+
+import { fetchTasksSuccess, fetchTasksFailure, addTaskSuccess, addTaskFailure, completeTaskSuccess, completeTaskFailure } from './taskActions';
+
 const GRAPHQL_ENDPOINT = 'https://localhost:7171/graphql';
 
 const GET_TASKS_AND_CATEGORIES = `
@@ -49,49 +57,35 @@ const fetchGraphQl = (query, variables = {}) => {
 
 const fetchTasksEpic = action$ =>
     action$.pipe(
-        ofType('FETCH_TASKS_REQUEST'),
+        ofType(FETCH_TASKS_REQUEST),
         mergeMap(() =>
             from(fetchGraphQl(GET_TASKS_AND_CATEGORIES)).pipe(
-            map(response => {
-                const data = response.data;
-                return {
-                    type: 'FETCH_TASKS_SUCCESS',
-                    payload: {
-                        activeTasks: data.activeTasks,
-                        completedTasks: data.completedTasks,
-                        categories: data.categories
-                    }
-                };
-            }),
-            catchError(() => of({type: 'FETCH_TASKS_FAILURE'}))
+            map(response => fetchTasksSuccess(response.data)
+            ),
+                catchError(() => of(fetchTasksFailure())
+            )
         )
     )
 );
 
 const addTaskEpic = action$ =>
     action$.pipe(
-        ofType('ADD_TASK_REQUEST'),
+        ofType(ADD_TASK_REQUEST),
         mergeMap(action =>
             from(fetchGraphQl(ADD_TASK, { task: action.payload })).pipe(
-                map(response => ({
-                    type: 'ADD_TASK',
-                    payload: response.data.addTask
-                })),
-                catchError(() => of({ type: 'ADD_TASK_FAILURE' }))
+                map(response => addTaskSuccess(response)),
+                catchError(() => of(addTaskFailure()))
             )
-        )
-    );
+    )
+);
 
 const completeTaskEpic = action$ =>
     action$.pipe(
-        ofType('COMPLETE_TASK_REQUEST'),
+        ofType(COMPLETE_TASK_REQUEST),
         mergeMap(action =>
             from(fetchGraphQl(COMPLETE_TASK, { id: action.payload })).pipe(
-                map(response => ({
-                    type: 'COMPLETE_TASK',
-                    payload: response.data.completeTask
-                })),
-                catchError(() => of({ type: 'COMPLETE_TASK_FAILURE' }))
+                map(response => completeTaskSuccess(response)),
+                catchError(() => of(completeTaskFailure()))
             )
         )
     );
