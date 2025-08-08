@@ -11,7 +11,7 @@ namespace MVC_Practice.Schemas
             Field<NonNullGraphType<StringGraphType>>("title")
                 .Description("Task`s description");
 
-            Field<DateTimeGraphType>("duedate")
+            Field<DateTimeGraphType>("dueDate")
                 .Description("Time for completing a task");
             
             Field<IntGraphType>("categoryId")

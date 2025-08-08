@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchTasks } from '../store/taskActions'
 import Cookies from 'js-cookie';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Outlet } from 'react-router-dom';
+import type { AppDispatch } from '../store/store';
 
 export default function Layout() {
-    const [storageType, setStorageType] = useState('db');
-    const dispatch = useDispatch();
+    const [storageType, setStorageType] = useState<'db' | 'xml'>('db');
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        const savedType = Cookies.get('StorageType');
+        const savedType = Cookies.get('StorageType') as 'db' | 'xml' | undefined;
         if (savedType) {
             setStorageType(savedType);
         }
     }, []);
 
-    const handleStorageTypeChange = (event) => {
-        const value = event.target.value;
+    const handleStorageTypeChange = (event : ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value as 'db' | 'xml';
         setStorageType(value);
         Cookies.set('StorageType', value);
         dispatch(fetchTasks());

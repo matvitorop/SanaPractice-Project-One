@@ -1,26 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTasks, addTask, completeTask } from '../store/taskActions'
+import type { RootState, AppDispatch } from '../store/store';
+import type { Task, Category } from '../store/types';
 
 export default function TodoList() {
-    const dispatch = useDispatch();
-    const { activeTasks, completedTasks, categories, loading, error } = useSelector(state => state.tasks);
+    const dispatch = useDispatch<AppDispatch>();
+    const { activeTasks, completedTasks, categories, loading, error } = useSelector((state: RootState) => state.tasks);
 
-    const [title, setTitle] = useState('');
-    const [duedate, setDueDate] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    const [title, setTitle] = useState<string>('');
+    const [duedate, setDueDate] = useState<string>('');
+    const [categoryId, setCategoryId] = useState<string>('');
 
     useEffect(() => {
         dispatch(fetchTasks());
     }, [dispatch]);
     
 
-    const handleAddTask = async (e) => {
+    const handleAddTask = async (e: FormEvent) => {
         e.preventDefault();
 
         await dispatch(addTask({
             title,
-            duedate: duedate ? new Date(duedate).toISOString() : null,
+            dueDate: duedate ? new Date(duedate).toISOString() : null,
             categoryId: categoryId ? parseInt(categoryId) : null
         }));
 
@@ -29,7 +31,7 @@ export default function TodoList() {
         setCategoryId('');
     };
 
-    const handleCompleteTask = async (id) => {
+    const handleCompleteTask = async (id : number) => {
         await dispatch(completeTask(id));
     };
 
@@ -62,7 +64,7 @@ export default function TodoList() {
                     onChange={(e) => setCategoryId(e.target.value)}
                 >
                     <option value="">Without category</option>
-                    {categories.map(cat => (
+                    {categories.map((cat: Category) => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                 </select>
@@ -73,14 +75,14 @@ export default function TodoList() {
 
             <h4 className="mb-3">Active tasks</h4>
             <ul className="list-group mb-4">
-                {activeTasks.map(task => (
+                {activeTasks.map((task: Task) => (
                     <li key={task.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{task.title}</strong>
                             {task.dueDate && <small className="text-muted ms-2">before {task.dueDate}</small>}
                             {task.categoryId && (
                                 <span className="badge bg-info text-dark ms-2">
-                                    {categories.find(c => c.id === task.categoryId)?.name}
+                                    {categories.find((c : Category) => c.id === task.categoryId)?.name}
                                 </span>
                             )}
                         </div>
@@ -91,7 +93,7 @@ export default function TodoList() {
 
             <h4 className="mb-3">Completed tasks</h4>
             <ul className="list-group">
-                {completedTasks.map(task => (
+                {completedTasks.map((task : Task) => (
                     <li key={task.id} className="list-group-item text-muted" style={{ textDecoration: 'line-through' }}>
                         <strong>{task.title}</strong>
                         {task.completedDate && <small className="ms-2">(completed {task.completedDate})</small>}

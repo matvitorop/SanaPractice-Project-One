@@ -1,7 +1,5 @@
 import './App.css'
-import Layout from './components/Layout.jsx';
-import TodoList from './components/TodoList.jsx';
-import { createRouter } from './Routing.jsx'; 
+import { createRouter } from './Routing'; 
 import { RouterProvider } from 'react-router-dom';
 
 export default function App() {

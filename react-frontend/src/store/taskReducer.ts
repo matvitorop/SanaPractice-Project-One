@@ -6,7 +6,9 @@ import {
     FETCH_TASKS_FAILURE,
 } from './ActionTypes'
 
-const initialState =
+import type { Task, Category, TaskState } from './types';
+
+const initialState : TaskState =
 {
     loading: false,
     error: false, 
@@ -15,7 +17,22 @@ const initialState =
     categories: []
 };
 
-export default function taskReducer(state = initialState, action) {
+type Action =
+    | { type: typeof FETCH_TASKS_REQUEST }
+    | {
+        type: typeof FETCH_TASKS_SUCCESS;
+        payload: {
+            activeTasks: Task[];
+            completedTasks: Task[];
+            categories: Category[];
+        };
+    }
+    | { type: typeof FETCH_TASKS_FAILURE }
+    | { type: typeof ADD_TASK; payload: Task }
+    | { type: typeof COMPLETE_TASK; payload: Task }
+    | { type: string; payload?: any };
+
+export default function taskReducer(state = initialState, action : Action) {
   switch (action.type) {
       case FETCH_TASKS_REQUEST:
           return {

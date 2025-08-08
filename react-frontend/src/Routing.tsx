@@ -1,9 +1,9 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import Layout from './components/Layout';
 import TodoList from './components/TodoList';
 
 export function createRouter() {
-    return createBrowserRouter([
+    const routes: RouteObject[] = [
         {
             path: '/',
             element: <Layout />,
@@ -11,5 +11,6 @@ export function createRouter() {
                 { index: true, element: <TodoList /> }
             ]
         }
-    ])
+    ];
+    return createBrowserRouter(routes);
 }
